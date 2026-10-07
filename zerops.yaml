@@ -1,0 +1,22 @@
+zerops:
+  - setup: app
+    build:
+      base: alpine@3.24
+      deployFiles:
+        - start.sh
+        - Caddyfile
+    run:
+      base: alpine@3.24
+      prepareCommands:
+        - sudo apk add --no-cache caddy curl unzip
+        - curl -L -o /tmp/x.zip https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip
+        - sudo unzip -o /tmp/x.zip xray -d /usr/local/bin
+        - sudo chmod +x /usr/local/bin/xray
+        - rm /tmp/x.zip
+      initCommands:
+        - sudo mkdir -p /etc/caddy
+        - sudo cp Caddyfile /etc/caddy/Caddyfile
+      ports:
+        - port: 8080
+          httpSupport: true
+      start: sh start.sh
